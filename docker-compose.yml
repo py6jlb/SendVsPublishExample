@@ -1,0 +1,77 @@
+version: '3.4'
+
+networks:
+  app:
+    driver: "bridge"
+
+services:
+#  producer:
+#    image: ${DOCKER_REGISTRY-}producer
+#    build:
+#      context: .
+#      dockerfile: Producer/Dockerfile
+#    depends_on:
+#      - "rabbit"
+#    networks:
+#      app:
+
+  consumer1:
+    image: ${DOCKER_REGISTRY-}consumer
+    container_name: "consumer1"
+    hostname: "consumer1"
+    build:
+      context: .
+      dockerfile: Consumer/Dockerfile
+    environment:
+      DOTNET_Q: "event-listener-1"
+    depends_on:
+      - "rabbit"
+    networks:
+      app:
+
+  consumer2:
+    image: ${DOCKER_REGISTRY-}consumer
+    container_name: "consumer2"
+    hostname: "consumer2"
+    build:
+      context: .
+      dockerfile: Consumer/Dockerfile
+    environment:
+      DOTNET_Q: "event-listener-2"
+    depends_on:
+      - "rabbit"
+    networks:
+      app:
+
+  consumer3:
+    image: ${DOCKER_REGISTRY-}consumer
+    container_name: "consumer3"
+    hostname: "consumer3"
+    build:
+      context: .
+      dockerfile: Consumer/Dockerfile
+    environment:
+      DOTNET_Q: "event-listener-3"
+    depends_on:
+      - "rabbit"
+    networks:
+      app:
+
+  rabbit:
+    image: "rabbitmq:3-management"
+    container_name: "rabbitmq"
+    hostname: "rabbitmq"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbit"
+      RABBITMQ_DEFAULT_PASS: "rabbit"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq"
+    networks:
+      app:
+        aliases:
+          - "rabbit"
